@@ -148,7 +148,7 @@ const app = Vue.createApp({
          */
         addToCart(product) {
             if (product.stocks <= 0) {
-                alert(product.name + " is out of stocks!");
+                alert("No more available stocks for '" + product.name + "'.")
                 return;
             }
             // check if the product is already in the cart
@@ -209,22 +209,11 @@ const app = Vue.createApp({
          * @param {Object} cartProduct
          */
         increaseCartQuantity(cartProduct) {
-            // find the product in stocks
-            let product = null;
+            // find the product, and add it to cart
             for (let i = 0; i < this.products.length; i++) {
                 if (cartProduct.id === this.products[i].id) {
-                    product = this.products[i];
+                    this.addToCart(this.products[i]);
                     break;
-                }
-            }
-
-            // if product is found and not yet sold out, add it to cart
-            if (product !== null) {
-                if (product.stocks > 0) {
-                    this.addToCart(product);
-                }
-                else {
-                    alert("No more available stocks for '" + product.name + "'.")
                 }
             }
         },
@@ -236,7 +225,7 @@ const app = Vue.createApp({
          * @param {number} cartProductIndex
          */
         decreaseCartQuantity(cartProduct, cartProductIndex) {
-            // if quantity is 1, ask to remove the cart product
+            // if quantity is 1, remove it from cart
             if (cartProduct.quantity <= 1) {
                 this.removeFromCart(cartProductIndex);
             }
