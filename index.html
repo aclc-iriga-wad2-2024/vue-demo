@@ -34,18 +34,18 @@
                     <pre>{{ activeTab }}</pre>
 
                     <!-- Shop -->
-                    <div v-if="tabs.active === 0">
+                    <div v-if="inShopTab">
                         <h1>Shop</h1>
                     </div>
 
 
                     <!-- Cart -->
-                    <div v-else-if="tabs.active === 1">
+                    <div v-else-if="inCartTab">
                         <h1>Cart</h1>
                     </div>
 
                     <!-- Checkout -->
-                    <div v-else>
+                    <div v-else-if="inCheckoutTab">
                         <h1>Checkout</h1>
                     </div>
                 </div>
