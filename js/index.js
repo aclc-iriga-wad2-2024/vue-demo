@@ -1,7 +1,12 @@
 const app = Vue.createApp({
     data() {
         return {
-            message: 'Hello Vue!'
+            message: 'Hello Vue!',
+            students: [
+                'Ck',
+                'Yuri',
+                'Lyka'
+            ]
         }
     },
 
