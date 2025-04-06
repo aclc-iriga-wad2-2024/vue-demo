@@ -11,7 +11,7 @@
 <body>
     <div id="app" class="pt-3">
         <div class="container">
-            <div class="card text-center">
+            <div class="card">
                 <div class="card-header">
                     <ul class="nav nav-tabs card-header-tabs">
                         <li
@@ -31,17 +31,67 @@
                     </ul>
                 </div>
                 <div class="card-body">
-                    <pre>{{ activeTab }}</pre>
-
                     <!-- Shop -->
                     <div v-if="inShopTab">
                         <h1>Shop</h1>
+                        <div class="row">
+                            <div
+                                v-for="(product, productIndex) in products"
+                                class="col-sm-4 pb-3"
+                            >
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h4>{{ product.name }}</h4>
+                                        <p class="m-0">Price: ${{ product.price.toLocaleString() }}</p>
+                                        <p class="m-0">Stocks: {{ product.stocks.toLocaleString() }}</p>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <button class="btn btn-primary" @click="addToCart(product)" :disabled="product.stocks <= 0">
+                                            <i class="fa fa-cart-shopping"></i>
+                                            Add To Cart
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
 
                     <!-- Cart -->
                     <div v-else-if="inCartTab">
                         <h1>Cart</h1>
+                        <div class="row">
+                            <div
+                                v-for="(product, productIndex) in cart"
+                                class="col-sm-4 pb-3"
+                            >
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h4>{{ product.name }}</h4>
+                                        <p class="m-0">Price   : ${{ product.price.toLocaleString() }}</p>
+                                        <p class="m-0">Quantity: {{ product.quantity.toLocaleString() }}</p>
+                                        <p class="m-0">Total Price: ${{ product.totalPrice.toLocaleString() }}</p>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <button class="btn btn-outline-danger" @click="removeFromCart(productIndex)">
+                                            <i class="fa fa-remove"></i>
+                                            Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12">
+                                <div class="d-flex justify-content-end">
+                                    <div>
+                                        <h5>${{ cartTotal.toLocaleString() }}</h5>
+                                        <button class="btn btn-success">Checkout</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Checkout -->
