@@ -50,9 +50,21 @@ const app = Vue.createApp({
                 }
             ],
 
-            cart: [
-
-            ]
+            cart: [] /** [
+                [
+                    id      : 1,
+                    name    : 'Product Name 1',
+                    price   : 100,
+                    quantity: 1
+                ],
+                [
+                    id      : 2,
+                    name    : 'Product Name 2',
+                    price   : 200,
+                    quantity: 2
+                ]
+                ...
+            ] */
         }
     },
 
@@ -95,14 +107,23 @@ const app = Vue.createApp({
         },
 
         /**
-         * @computed cartTotal
+         * @computed cartTotalProducts
+         * @description The total products in cart.
+         * @returns {number}
+         */
+        cartTotalProducts() {
+            return this.cart.length;
+        },
+
+        /**
+         * @computed cartTotalAmount
          * @description The total amount of cart products.
          * @returns {number}
          */
-        cartTotal() {
+        cartTotalAmount() {
             let total = 0;
             for (let i = 0; i < this.cart.length; i++) {
-                total += this.cart[i].totalPrice;
+                total += this.cart[i].price * this.cart[i].quantity;
             }
 
             return total;
@@ -123,7 +144,7 @@ const app = Vue.createApp({
         /**
          * @method addToCart
          * @description Add the given product object to the cart.
-         * @param product
+         * @param {Object} product
          */
         addToCart(product) {
             if (product.stocks <= 0) {
@@ -149,9 +170,10 @@ const app = Vue.createApp({
             // otherwise, add the product to the cart
             else {
                 this.cart.push({
-                    ...product,
-                    quantity: 1,
-                    totalPrice: product.price
+                    id      : product.id,
+                    name    : product.name,
+                    price   : product.price,
+                    quantity: 1
                 });
             }
 
@@ -162,11 +184,11 @@ const app = Vue.createApp({
         /**
          * @method removeFromCart
          * @description Remove the product from cart with the given product index.
-         * @param {number} productIndex
+         * @param {number} cartProductIndex
          */
-        removeFromCart(productIndex) {
+        removeFromCart(cartProductIndex) {
             // reference the cart product
-            const cartProduct = this.cart[productIndex];
+            const cartProduct = this.cart[cartProductIndex];
 
             if (confirm("Are you sure to remove '" + cartProduct.name + "' from your cart?")) {
                 // return the stocks of the cart product
@@ -177,7 +199,59 @@ const app = Vue.createApp({
                 }
 
                 // remove the cart product
-                this.cart.splice(productIndex, 1);
+                this.cart.splice(cartProductIndex, 1);
+            }
+        },
+
+        /**
+         * @method increaseCartQuantity
+         * @description Increase the quantity of a cart product.
+         * @param {Object} cartProduct
+         */
+        increaseCartQuantity(cartProduct) {
+            // find the product in stocks
+            let product = null;
+            for (let i = 0; i < this.products.length; i++) {
+                if (cartProduct.id === this.products[i].id) {
+                    product = this.products[i];
+                    break;
+                }
+            }
+
+            // if product is found and not yet sold out, add it to cart
+            if (product !== null) {
+                if (product.stocks > 0) {
+                    this.addToCart(product);
+                }
+                else {
+                    alert("No more available stocks for '" + product.name + "'.")
+                }
+            }
+        },
+
+        /**
+         * @method decreaseCartQuantity
+         * @description Decrease the quantity of a cart product.
+         * @param {Object} cartProduct
+         * @param {number} cartProductIndex
+         */
+        decreaseCartQuantity(cartProduct, cartProductIndex) {
+            // if quantity is 1, ask to remove the cart product
+            if (cartProduct.quantity <= 1) {
+                this.removeFromCart(cartProductIndex);
+            }
+
+            // otherwise, just decrease its quantity and return the stock
+            else {
+                cartProduct.quantity -= 1;
+
+                // return the stock
+                for (let i = 0; i < this.products.length; i++) {
+                    if (cartProduct.id === this.products[i].id) {
+                        this.products[i].stocks += 1;
+                        break;
+                    }
+                }
             }
         }
     },

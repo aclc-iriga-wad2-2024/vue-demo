@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="dist/font-awesome-pro-6.2.1/css/all.min.css">
     <script src="dist/vue-3.5.13/vue.global.js"></script>
 </head>
-<body>
+<body class="bg-secondary">
     <div id="app" class="pt-3">
         <div class="container">
             <div class="card">
@@ -21,35 +21,37 @@
                             @click="activateTab(tabIndex)"
                         >
                             <a
-                                class="nav-link"
+                                class="nav-link fw-bold"
                                 :class="{'active': tabIndex === tabs.active}"
                                 style="cursor: pointer"
                             >
                                 {{ tabItem.label }}
+                                <span class="badge bg-danger" v-if="tabItem.key === 'cart' && cartTotalProducts > 0">{{ cartTotalProducts }}</span>
                             </a>
                         </li>
                     </ul>
                 </div>
                 <div class="card-body">
-                    <!-- Shop -->
+                    <!-- Shop Area -->
                     <div v-if="inShopTab">
-                        <h1>Shop</h1>
+                        <h1 class="mb-3">Shop</h1>
                         <div class="row">
                             <div
                                 v-for="(product, productIndex) in products"
-                                class="col-sm-4 pb-3"
+                                class="col-sm-6 col-md-4 pb-3"
                             >
                                 <div class="card h-100">
                                     <div class="card-body">
                                         <h4>{{ product.name }}</h4>
-                                        <p class="m-0">Price: ${{ product.price.toLocaleString() }}</p>
-                                        <p class="m-0">Stocks: {{ product.stocks.toLocaleString() }}</p>
+                                        <div v-if="product.stocks > 0">Stocks: {{ product.stocks.toLocaleString() }}</div>
+                                        <div v-else class="badge bg-danger">Sold out</div>
                                     </div>
 
-                                    <div class="card-footer">
-                                        <button class="btn btn-primary" @click="addToCart(product)" :disabled="product.stocks <= 0">
-                                            <i class="fa fa-cart-shopping"></i>
-                                            Add To Cart
+                                    <div class="card-footer d-flex justify-content-between align-items-center">
+                                        <h4 class="m-0">${{ product.price.toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</h4>
+                                        <button class="btn btn-primary btn-sm" @click="addToCart(product)" :disabled="product.stocks <= 0">
+                                            <i class="fa fa-cart-plus fa-fw me-1"></i>
+                                            Add
                                         </button>
                                     </div>
                                 </div>
@@ -57,53 +59,53 @@
                         </div>
                     </div>
 
-
-                    <!-- Cart -->
+                    <!-- Cart Area -->
                     <div v-else-if="inCartTab">
-                        <h1>Cart</h1>
+                        <h1 class="mb-3">Cart</h1>
                         <div class="row">
                             <div
-                                v-for="(product, productIndex) in cart"
+                                v-for="(cartProduct, cartProductIndex) in cart"
                                 class="col-sm-4 pb-3"
                             >
                                 <div class="card h-100">
                                     <div class="card-body">
-                                        <h4>{{ product.name }}</h4>
-                                        <p class="m-0">Price   : ${{ product.price.toLocaleString() }}</p>
-                                        <p class="m-0">Quantity: {{ product.quantity.toLocaleString() }}</p>
-                                        <p class="m-0">Total Price: ${{ product.totalPrice.toLocaleString() }}</p>
+                                        <h4>{{ cartProductIndex + 1}}. {{ cartProduct.name }}</h4>
+                                        <p class="m-0">Price   : ${{ cartProduct.price.toLocaleString() }}</p>
+                                        <div class="m-0 d-flex gap-2">
+                                            <span>Quantity: {{ cartProduct.quantity.toLocaleString() }}</span>
+                                            <div class="d-inline-flex align-items-center gap-1">
+                                                <button @click="decreaseCartQuantity(cartProduct, cartProductIndex)" class="btn btn-outline-danger btn-sm py-0 px-1"><i class="fal fa-minus"></i></button>
+                                                <button @click="increaseCartQuantity(cartProduct)" class="btn btn-outline-success btn-sm py-0 px-1"><i class="fal fa-plus"></i></button>
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <div class="card-footer">
-                                        <button class="btn btn-outline-danger" @click="removeFromCart(productIndex)">
-                                            <i class="fa fa-remove"></i>
+                                    <div class="card-footer d-flex justify-content-between align-items-center">
+                                        <h4 class="m-0">${{ (cartProduct.price * cartProduct.quantity).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</h4>
+                                        <button class="btn btn-outline-danger btn-sm" @click="removeFromCart(cartProductIndex)">
+                                            <i class="fa fa-cart-circle-xmark fa-fw me-1"></i>
                                             Remove
                                         </button>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="col-sm-12">
-                                <div class="d-flex justify-content-end">
-                                    <div>
-                                        <h5>${{ cartTotal.toLocaleString() }}</h5>
-                                        <button class="btn btn-success">Checkout</button>
-                                    </div>
+                            <!-- Cart Total Amount -->
+                            <div class="col-sm-12 pt-5">
+                                <div class="d-flex justify-content-end align-items-center gap-3">
+                                    <h5 class="m-0">${{ cartTotalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</h5>
+                                    <button class="btn btn-success">Checkout</button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Checkout -->
+                    <!-- Checkout Area -->
                     <div v-else-if="inCheckoutTab">
-                        <h1>Checkout</h1>
+                        <h1 class="mb-3">Checkout</h1>
                     </div>
                 </div>
             </div>
-
-
-
-
         </div>
     </div>
 
