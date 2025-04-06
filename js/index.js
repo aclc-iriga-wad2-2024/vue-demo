@@ -15,7 +15,14 @@ const app = Vue.createApp({
 
     /** COMPUTED */
     computed: {
-
+        /**
+         * @computed activeTab
+         * @description The active tab object.
+         * @returns {Object}
+         */
+        activeTab() {
+            return this.tabs.items[this.tabs.active];
+        }
     },
 
     /** METHODS */
